@@ -1,41 +1,46 @@
-// 生成した Prisma Client をインポートするんじゃ
+import express from "express";
+// 生成した Prisma Client をインポート
 import { PrismaClient } from "./generated/prisma/client";
 
 const prisma = new PrismaClient({
-  // PrismaがどんなSQLクエリを実行したか、コンソールに表示するための設定じゃ
+  // 開発中は、実行されたクエリをログに表示するとデバッグに便利じゃ
   log: ["query"],
 });
+const app = express();
 
-async function main() {
-  // Prisma Client を使ってデータベースに接続したことを知らせる
-  console.log("Prisma Client を初期化しました。");
+// 環境変数が設定されていれば、そこからポート番号を取得する。なければ 8888 を使う。
+const PORT = process.env.PORT || 8888;
 
-  // まず、現在の全ユーザーを取得して表示する
-  const usersBefore = await prisma.user.findMany();
-  console.log("Before ユーザー一覧:", usersBefore);
+// EJS をテンプレートエンジンとして設定する
+app.set("view engine", "ejs");
+// EJS のテンプレートファイルが置いてあるディレクトリを指定する
+app.set("views", "./views");
 
-  // 新しいユーザーを1件作成する
-  const newUser = await prisma.user.create({
-    data: {
-      name: `新しいユーザー ${new Date().toISOString()}`,
-    },
-  });
-  console.log("新しいユーザーを追加しました:", newUser);
+// フォームから送信されたデータ（例：<input name="name">）を受け取れるように設定
+app.use(express.urlencoded({ extended: true }));
 
-  // 追加後にもう一度、全ユーザーを取得して表示する
-  const usersAfter = await prisma.user.findMany();
-  console.log("After ユーザー一覧:", usersAfter);
-}
+// ルートパス ('/') にアクセスがあったときの処理
+app.get("/", async (req, res) => {
+  // データベースから全ユーザーを取得
+  const users = await prisma.user.findMany();
+  // 'index.ejs' を使ってHTMLを生成し、'users' という名前でユーザー一覧データを渡す
+  res.render("index", { users });
+});
 
-// main 関数を実行する。
-main()
-  .catch((e) => {
-    // もし途中でエラーが起きたら、内容を表示して異常終了する
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    // 最後に、必ずデータベースとの接続を切断する
-    await prisma.$disconnect();
-    console.log("Prisma Client を切断しました。");
-  });
+// '/users' というパスにPOSTリクエストがあったときの処理（フォーム送信時）
+app.post("/users", async (req, res) => {
+  const name = req.body.name; // フォームから送信された名前を取得
+  if (name) {
+    // データベースに新しいユーザーを作成
+    const newUser = await prisma.user.create({
+      data: { name },
+    });
+    console.log("新しいユーザーを追加しました:", newUser);
+  }
+  res.redirect("/"); // ユーザー追加後、一覧ページにリダイレクトする
+});
+
+// サーバーを起動
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+});
