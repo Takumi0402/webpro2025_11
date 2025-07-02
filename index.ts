@@ -30,10 +30,18 @@ app.get("/", async (req, res) => {
 // '/users' というパスにPOSTリクエストがあったときの処理（フォーム送信時）
 app.post("/users", async (req, res) => {
   const name = req.body.name; // フォームから送信された名前を取得
+  const age = req.body.age ? Number(req.body.age) : null;
+
+  if (age !== null && isNaN(age)) {
+    console.error("年齢は数値でなければありません。");
+    res.status(400).send("年齢は数値でなければありません。");
+    return;
+  }
+
   if (name) {
     // データベースに新しいユーザーを作成
     const newUser = await prisma.user.create({
-      data: { name },
+      data: { name, age },
     });
     console.log("新しいユーザーを追加しました:", newUser);
   }
