@@ -19,3 +19,12 @@ model User {
   name  String
   age   Int?
 }
+
+model Shop {
+  id          Int       @id @default(autoincrement())
+  name        String    // お店の名前
+  type        String    // お店の種類（ramen・karaoke・izakayaなど）
+  description String?   // お店の説明（任意）
+  latitude    Float     // 緯度
+  longitude   Float     // 経度
+}

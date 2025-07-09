@@ -16,15 +16,40 @@ app.set("view engine", "ejs");
 // EJS のテンプレートファイルが置いてあるディレクトリを指定する
 app.set("views", "./views");
 
+app.use(express.static("public"));
 // フォームから送信されたデータ（例：<input name="name">）を受け取れるように設定
 app.use(express.urlencoded({ extended: true }));
 
 // ルートパス ('/') にアクセスがあったときの処理
+// app.get("/", async (req, res) => {
+//   // データベースから全ユーザーを取得
+//   const users = await prisma.user.findMany();
+//   // 'index.ejs' を使ってHTMLを生成し、'users' という名前でユーザー一覧データを渡す
+//   res.render("index", { users });
+// });
+
 app.get("/", async (req, res) => {
-  // データベースから全ユーザーを取得
-  const users = await prisma.user.findMany();
-  // 'index.ejs' を使ってHTMLを生成し、'users' という名前でユーザー一覧データを渡す
-  res.render("index", { users });
+  const shops = await prisma.shop.findMany();
+  res.render("index", { shops });
+});
+
+app.post("/shops", async (req, res) => {
+  const { name, type, description, latitude, longitude } = req.body;
+  console.log("受け取ったデータ:", req.body);
+
+  const lat = parseFloat(latitude);
+  const lon = parseFloat(longitude);
+
+  await prisma.shop.create({
+    data: {
+      name: name,
+      type: type,
+      description: description,
+      latitude: lat,
+      longitude: lon,
+    },
+  });
+  res.redirect("/");
 });
 
 // '/users' というパスにPOSTリクエストがあったときの処理（フォーム送信時）

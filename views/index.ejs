@@ -2,20 +2,61 @@
 <html lang="ja">
   <head>
     <meta charset="UTF-8" />
-    <title>ユーザー一覧</title>
+    <title>お店一覧</title>
+    <link rel="stylesheet" href="/style.css" />
+    <%- include("partials/_header") %>
   </head>
   <body>
-    <h1>ユーザー一覧</h1>
+    <h1>お店一覧</h1>
     <ul>
-      <% users.forEach(user => { %>
-      <li><%= user.name %> - <%= user.age ? user.age : '未設定'%></li>
+      <% shops.forEach(shop => { %>
+      <li>
+        <%= shop.name %> - <%= shop.description ? shop.description : '未設定'%>
+      </li>
       <% }) %>
     </ul>
-    <h2>ユーザー追加</h2>
-    <form action="/users" method="post">
-      <input type="text" name="name" placeholder="ユーザー名を入力" required />
-      <input type="number" name="age" placeholder="年齢を入力" />
-      <button type="submit">追加</button>
-    </form>
+    <div class="form-container">
+      <h2>お店追加</h2>
+      <form action="/shops" method="post">
+        <div class="form-group">
+          <label for="name">店名:</label>
+          <input
+            type="text"
+            name="name"
+            placeholder="お店の名前を入力"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="type">店種:</label>
+          <input type="text" name="type" placeholder="店種を入力" required />
+        </div>
+        <div class="form-group">
+          <label for="description">説明:</label>
+          <textarea name="description" rows="4"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="latitude">緯度:</label>
+          <input
+            type="number"
+            step="any"
+            name="latitude"
+            placeholder="緯度を入力"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="longitude">経度:</label>
+          <input
+            type="number"
+            step="any"
+            name="longitude"
+            placeholder="経度を入力"
+            required
+          />
+        </div>
+        <button type="submit" class="submit-btn">追加</button>
+      </form>
+    </div>
   </body>
 </html>
