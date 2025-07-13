@@ -1,0 +1,98 @@
+<!-- src/views/dashboard.ejs -->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ダッシュボード - ひようらメモ帳</title>
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    /* ダッシュボード専用のスタイル */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+    @media (min-width: 768px) {
+      .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    .card {
+      background: #fff;
+      border-radius: 8px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .card h2 {
+      margin-top: 0;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 0.5rem;
+    }
+    .how-to-use ul {
+      padding-left: 20px;
+      line-height: 1.6;
+    }
+    .how-to-use li {
+      margin-bottom: 0.75rem;
+    }
+    .recent-memo-item {
+      display: block;
+      padding: 1rem;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+      text-decoration: none;
+      color: #333;
+      background-color: #f8f9fa;
+      transition: background-color 0.2s;
+    }
+    .recent-memo-item:hover {
+      background-color: #e9ecef;
+    }
+    .memo-title {
+      font-weight: bold;
+    }
+    .memo-location {
+      font-size: 0.9rem;
+      color: #6c757d;
+    }
+    .memo-date {
+      font-size: 0.8rem;
+      color: #adb5bd;
+    }
+  </style>
+</head>
+<body>
+  <%- include('partials/_header') %>
+  <main class="container">
+    <h1><%= user.name %>さん、こんにちは！</h1>
+    
+    <div class="dashboard-grid">
+      <div class="card how-to-use">
+        <h2>ひようらメモ帳の使い方</h2>
+        <ul>
+          <li><strong>マップを見る:</strong> 上のナビゲーションから「マップ」ページに移動します。</li>
+          <li><strong>ピンを追加:</strong> 「ピンを追加」ボタンを押して、地図上のお好きな場所をクリックし、名前を付けて保存します。</li>
+          <li><strong>メモを見る:</strong> 作成したピンをクリックすると、その場所のメモページへ移動できます。</li>
+          <li><strong>メモを記録:</strong> メモページで「メモを追記する」ボタンから、食べたものや感想、写真を記録しましょう！</li>
+        </ul>
+      </div>
+
+      <div class="card recent-memos">
+        <h2>最近の記録</h2>
+        <% if (recentMemos.length > 0) { %>
+          <% recentMemos.forEach(memo => { %>
+            <a href="/locations/<%= memo.location.id %>/memo" class="recent-memo-item">
+              <div class="memo-title"><%= memo.title %></div>
+              <div class="memo-location"><%= memo.location.name %></div>
+              <div class="memo-date"><%= new Date(memo.visitedAt).toLocaleDateString('ja-JP') %></div>
+            </a>
+          <% }) %>
+        <% } else { %>
+          <p>まだ記録がありません。「マップ」ページから最初のピンを立ててみましょう！</p>
+        <% } %>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

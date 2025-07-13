@@ -1,0 +1,40 @@
+<!-- src/views/auth/signup.ejs -->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>新規登録</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="form-container">
+    <h2>新規登録</h2>
+    
+    <!-- ★ 変更点：エラーメッセージ表示エリア -->
+    <% if (locals.error === 'duplicate') { %>
+      <div class="alert alert-danger">このメールアドレスは既に使用されています。</div>
+    <% } else if (locals.error === 'unknown') { %>
+      <div class="alert alert-danger">不明なエラーが発生しました。もう一度お試しください。</div>
+    <% } %>
+
+    <form action="/signup" method="post">
+      <div class="form-group">
+        <label for="name">名前</label>
+        <input type="text" id="name" name="name" required>
+      </div>
+      <div class="form-group">
+        <label for="email">メールアドレス</label>
+        <input type="email" id="email" name="email" required>
+      </div>
+      <div class="form-group">
+        <label for="password">パスワード</label>
+        <input type="password" id="password" name="password" required>
+      </div>
+      <button type="submit" class="submit-btn">登録</button>
+    </form>
+    <p class="text-center mt-3">
+      アカウントをお持ちですか？ <a href="/login">ログイン</a>
+    </p>
+  </div>
+</body>
+</html>
