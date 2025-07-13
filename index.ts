@@ -20,17 +20,14 @@ app.use(express.static("public"));
 // フォームから送信されたデータ（例：<input name="name">）を受け取れるように設定
 app.use(express.urlencoded({ extended: true }));
 
-// ルートパス ('/') にアクセスがあったときの処理
-// app.get("/", async (req, res) => {
-//   // データベースから全ユーザーを取得
-//   const users = await prisma.user.findMany();
-//   // 'index.ejs' を使ってHTMLを生成し、'users' という名前でユーザー一覧データを渡す
-//   res.render("index", { users });
-// });
-
 app.get("/", async (req, res) => {
   const shops = await prisma.shop.findMany();
-  res.render("index", { shops });
+  res.render("home", { currentPage: "home", shops: shops });
+});
+
+app.get("/shops", async (req, res) => {
+  const shops = await prisma.shop.findMany();
+  res.render("shops", { shops: shops, currentPage: "shops" });
 });
 
 app.post("/shops", async (req, res) => {
@@ -49,7 +46,15 @@ app.post("/shops", async (req, res) => {
       longitude: lon,
     },
   });
-  res.redirect("/");
+  res.redirect("/shops");
+});
+
+app.get("/shops/:id", async (req, res) => {
+  const shopId = parseInt(req.params.id, 10);
+  const shop = await prisma.shop.findUnique({
+    where: { id: shopId },
+  });
+  res.render("shop-detail", { shop: shop, currentPage: "" });
 });
 
 // '/users' というパスにPOSTリクエストがあったときの処理（フォーム送信時）
